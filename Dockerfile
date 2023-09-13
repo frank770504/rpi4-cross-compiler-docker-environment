@@ -2,6 +2,8 @@
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
+
+# chroots setting
 RUN apt-get install wget -y
 RUN ln -fs /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 RUn apt-get install tzdata -y
@@ -44,6 +46,8 @@ SKIP_PROPOSED="1"
 SKIP_SECURITY="1"
 EATMYDATA="1"
 EOF
+
+# build chroots
 RUN usermod -a -G sbuild root
 RUN newgrp sbuild
 ENV ARCH=arm64
@@ -53,4 +57,14 @@ RUN --security=insecure mk-sbuild --arch=$ARCH $RELEASE \
     --debootstrap-mirror=http://deb.debian.org/debian/ \
     --name=rpi-$RELEASE
 COPY ./entrypoint.sh /entrypoint.sh
+
+# vim environment setting
+RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+COPY vimrc /root/.vimrc
+RUN vim +PluginInstall +qall
+RUN apt-get install universal-ctags -y
+RUN apt-get install fonts-powerline -y
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --key-bindings --completion --update-rc
+RUN apt-get install vim-nox mono-complete golang nodejs openjdk-17-jdk openjdk-17-jre npm -y
+RUN cd ~/.vim/bundle/YouCompleteMe && ./install.py --all --force-sudo
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
