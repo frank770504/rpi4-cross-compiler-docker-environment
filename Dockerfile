@@ -32,6 +32,7 @@ RUN <<EOF cat >> $HOME/rpi.sources
 deb http://deb.debian.org/debian bullseye main contrib non-free
 deb http://security.debian.org/debian-security bullseye-security main contrib non-free
 deb http://deb.debian.org/debian bullseye-updates main contrib non-free
+deb http://archive.raspberrypi.org/debian/ bullseye main
 # Uncomment deb-src lines below then 'apt-get update' to enable 'apt-get source'
 #deb-src http://deb.debian.org/debian bullseye main contrib non-free
 #deb-src http://security.debian.org/debian-security bullseye-security main contrib non-free
@@ -56,6 +57,10 @@ ENV TC=aarch64-rpi4-linux-gnu
 RUN --security=insecure mk-sbuild --arch=$ARCH $RELEASE \
     --debootstrap-mirror=http://deb.debian.org/debian/ \
     --name=rpi-$RELEASE
+RUN --security=insecure sbuild-apt rpi-$RELEASE-$ARCH apt-get install curl
+RUN --security=insecure echo "curl -sL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --import -" | sbuild-shell rpi-$RELEASE-$ARCH
+RUN --security=insecure echo "gpg -a --export 82B129927FA3303E | apt-key add -" | sbuild-shell rpi-$RELEASE-$ARCH
+RUN --security=insecure sbuild-apt rpi-$RELEASE-$ARCH apt-get update
 COPY ./entrypoint.sh /entrypoint.sh
 
 # vim environment setting
@@ -64,6 +69,7 @@ COPY vimrc /root/.vimrc
 RUN vim +PluginInstall +qall
 RUN apt-get install universal-ctags -y
 RUN apt-get install fonts-powerline -y
+RUN apt-get install ripgrep -y
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --key-bindings --completion --update-rc
 RUN apt-get install vim-nox mono-complete golang nodejs openjdk-17-jdk openjdk-17-jre npm -y
 RUN cd ~/.vim/bundle/YouCompleteMe && ./install.py --all --force-sudo

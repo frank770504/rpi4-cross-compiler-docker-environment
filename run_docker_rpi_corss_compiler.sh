@@ -4,7 +4,7 @@ _docker_source=/root/main
 _test_source=/Users/frankchen/Code/rpi_test_data
 _docker_test_source=/root/test_data
 
-_docker_image=aarch64-rpi4-bullseye-cross-compiler-2204:v0.1.3
+_docker_image=aarch64-rpi4-bullseye-cross-compiler-2204:v0.1.6
 _docker_volume=docker_build_rpi
 _docker_volume_toolchain=rpi4-toolchain
 #_docker_volume_sysroot=rpi4-sys
