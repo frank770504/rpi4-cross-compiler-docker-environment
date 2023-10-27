@@ -1,0 +1,20 @@
+[constants]
+toolchain_dir = '/opt/x-tools/aarch64-rpi4-linux-gnu/bin/'
+target_setting = 'aarch64-rpi4-linux-gnu'
+c_sys_root = '/root/sys/chroots/rpi-bullseye-arm64/'
+[binaries]
+c = toolchain_dir / target_setting + '-gcc'
+cpp = toolchain_dir / target_setting + '-g++'
+strip = toolchain_dir / target_setting + 'strip'
+pkg-config = '/usr/bin/pkg-config'
+[properties]
+sys_root = c_sys_root
+pkg_config_libdir = sys_root + 'usr/lib/aarch64-linux-gnu/pkgconfig'
+[built-in options]
+cpp_args = ['-I' + c_sys_root + 'usr/include/','-I' + c_sys_root + 'usr/include/aarch64-linux-gnu/', '-Wno-variadic-macros', '-Wno-pedantic']
+cpp_link_args = ['-Wl,-rpath,' + c_sys_root + 'lib/aarch64-linux-gnu/', '-Wl,-rpath-link,' + c_sys_root + 'lib/aarch64-linux-gnu/']
+[host_machine]
+system = 'Linux'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'
