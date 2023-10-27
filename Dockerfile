@@ -75,7 +75,8 @@ RUN cd ~/.vim/bundle/YouCompleteMe && ./install.py --all --force-sudo
 
 # install the latest meson
 RUN cd /root && git clone https://github.com/mesonbuild/meson.git
-RUN cd meson && python3 setup.py build && python3 setup.py install && cd ..
-RUN rm -r meson
+RUN apt install python3-pip -y
+RUN cd /root/meson && python3 setup.py build && python3 setup.py install
+RUN rm -r /root/meson
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
