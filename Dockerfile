@@ -16,7 +16,6 @@ RUN apt-get install -y \
                     g++
 RUN apt-get install git -y
 RUN apt-get install vim -y
-RUN apt-get install libboost-all-dev -y
 RUN apt-get install zip -y
 RUN apt-get install gdb -y
 RUN apt-get install ssh -y
@@ -73,4 +72,10 @@ RUN apt-get install ripgrep -y
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --key-bindings --completion --update-rc
 RUN apt-get install vim-nox mono-complete golang nodejs openjdk-17-jdk openjdk-17-jre npm -y
 RUN cd ~/.vim/bundle/YouCompleteMe && ./install.py --all --force-sudo
+
+# install the latest meson
+RUN cd /root && git clone https://github.com/mesonbuild/meson.git
+RUN cd meson && python3 setup.py build && python3 setup.py install && cd ..
+RUN rm -r meson
+
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

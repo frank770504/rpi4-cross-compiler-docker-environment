@@ -2,7 +2,11 @@
 
 `docker buildx create --use --name insecure-builder --buildkitd-flags '--allow-insecure-entitlement security.insecure'`
 
-`docker buildx build --allow security.insecure -t aarch64-rpi4-bullseye-cross-compiler-2204:v0.1.3 --load .`
+```
+_tag=$(git describe --tags)
+docker buildx build --allow security.insecure -t aarch64-rpi4-bullseye-cross-compiler-2204:$_tag --load .
+```
+
 
 ## run container
 
@@ -12,18 +16,25 @@
 
 - put the built toolchain in /opt/x-tools/
 - using `sbuild-apt rpi-$RELEASE-$ARCH apt-get install xxx` to install package in `~/sys/chroots/`
-- using rsync to sync the `chroots` to the `sysroot`, built from toolchain`.
+
+### cmake
 
 ```
-~ cd /opt/x-tools/aarch64-rpi4-linux-gnu/aarch64-rpi4-linux-gnu/sysroot
-~ rsync -rzL --safe-links ~/sys/chroots/rpi-bullseye-arm64/lib/ ./lib
-~ rsync -rzL --safe-links ~/sys/chroots/rpi-bullseye-arm64/usr/lib/ ./usr/lib
-~ rsync -rzL --safe-links ~/sys/chroots/rpi-bullseye-arm64/usr/include/ ./usr/include/
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/$TC.cmake
+cmake --build build -j
+cmake --install build
 ```
 
-## All the path I go through, that I haven't organize all the information
+### meson
 
-https://mousy-brain-150.notion.site/RPI-Cross-compiler-59002cbdaaa144c58ab3d301aee5ba82?pvs=4
+```
+meson setup --cross-file rpi_cross_file.txt build
+meson compile -C build
+```
+
+## reference
+
+https://randdevnotes.blogspot.com/2023/10/rpi4-cross-compile-for-libcamera-app-on_24.html
 
 
 
